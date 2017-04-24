@@ -18,3 +18,12 @@ issues_url 'https://github.com/Stromweld/artifactory_ii/issues'
 # a Supermarket.
 #
 source_url 'https://github.com/Stromweld/artifactory_ii'
+
+%w(ubuntu debian centos redhat amazon).each do |os|
+  supports os
+end
+
+depends          'java'
+depends          'runit'
+depends          'ark'
+depends          'apache2'
