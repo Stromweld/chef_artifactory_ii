@@ -2,12 +2,14 @@
 
 Installs JFrog's Artifactory
 
+Cookbook copied from Agileorbit [artifactory cookbook](https://supermarket.chef.io/cookbooks/artifactory). This cookbook has been updated to support chef-client 13+.
+
 ## Requirements
 
-* Java 7 (java cookbook)
+* Java cookbook
 * ark cookbook
-depends          'runit'
-depends          'apache2'
+* runit cookbook
+* apache2 cookbook
 
 ## Usage
 
@@ -21,15 +23,20 @@ The default username/password for the server is admin/password
 
 ## Attributes
 
-* `node['artifactory_ii']['home']` - Artifactory home directory. Artifacts are kept here
-* `node['artifactory_ii']['log_dir']` - Artifactory/tomcat logs
-* `node['artifactory_ii']['port']` - Artifactory http port, default is 8081
-* `node['artifactory_ii']['shutdown_port']` - Artifactory http port, default is 8081
-* `node['artifactory_ii']['java']['xmx']` - java Xmx (max heap size)
-* `node['artifactory_ii']['java']['xms']` - java Xms (initial heap size)
-* `node['artifactory_ii']['java']['extra_opts']` - Extra java options, default is '-XX:+UseG1GC'
-* `node['artifactory_ii']['install_java']` - Instruct this cookbook to install Java for you. Default `true`
-
+| Attribute | Default | Comment |
+| -------------  | -------------  | -------------  |
+| ['artifactory_ii']['zip_url'] | 'http://dl.bintray.com/content/jfrog/artifactory/artifactory-3.4.1.zip?direct' | String, Download url |
+| ['artifactory_ii']['zip_checksum'] | '5019e4a4cac7936b3d4e1fc457d36fff60cdf27de42886184b0b5a844f43f0b0' | String, sha 256 sum of download file |
+| ['artifactory_ii']['home'] | '/var/lib/artifactory' | String, artifactory home directory location |
+| ['artifactory_ii']['log_dir'] | '/var/log/artifactory' | String, artifactory log file location |
+| ['artifactory_ii']['catalina_base'] | ::File.join(node['artifactory_ii']['home'], 'tomcat') | String, location of the install directory |
+| ['artifactory_ii']['java']['xmx'] | '1g' | String, maximum memory assigned to the java process |
+| ['artifactory_ii']['java']['xms'] | '512m' | Stirng, minimum memory assigned to the java process |
+| ['artifactory_ii']['java']['extra_opts'] | '-XX:+UseG1GC' | String, additional java tuning options to pass to the process |
+| ['artifactory_ii']['user'] | 'artifactory' | String, user account to run the process under |
+| ['artifactory_ii']['port'] | 8081 | Integer, port for artifactory to listen on |
+| ['artifactory_ii']['shutdown_port'] | 8015 | Integer, port to listen for shutdown command | 
+| ['artifactory_ii']['install_java'] | true | boolean, have artifactory cookbook install java |
 
 ## Recipes
 
@@ -40,3 +47,4 @@ The default username/password for the server is admin/password
 
 * Author:: Avishai Ish-Shalom (<avishai@fewbytes.com>)
 * Author:: Eric Helgeson (<erichelgeson@gmail.com>)
+* Author:: Corey Hemminger (<hemminger@hotmail.com>)
