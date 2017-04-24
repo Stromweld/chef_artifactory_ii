@@ -17,41 +17,33 @@
 # limitations under the License.
 
 if node['artifactory_ii']['install_java']
-  node.set['java']['jdk_version'] = 7
   include_recipe 'java'
 end
 
 include_recipe 'runit'
-package 'unzip'
+
 # ark requires rsync package
-package 'rsync'
+package %w(unzip rsync)
+
 
 user node['artifactory_ii']['user'] do
   home node['artifactory_ii']['home']
 end
 
-directory node['artifactory_ii']['home'] do
-  owner node['artifactory_ii']['user']
-  mode 00755
-  recursive true
-end
+dir = [
+  node['artifactory_ii']['home'],
+  node['artifactory_ii']['catalina_base'],
+  %w(work temp).each { |tomcat_dir| ::File.join(node['artifactory_ii']['catalina_base'], tomcat_dir) },
+  node['artifactory_ii']['log_dir']
+]
 
-directory node['artifactory_ii']['catalina_base'] do
-  owner node['artifactory_ii']['user']
-  mode 00755
-  recursive true
-end
-
-%w(work temp).each do |tomcat_dir|
-  directory ::File.join(node['artifactory_ii']['catalina_base'], tomcat_dir) do
+dir.each do |folder|
+  directory folder do
     owner node['artifactory_ii']['user']
     mode 00755
+    recursive true
   end
-end
 
-directory node['artifactory_ii']['log_dir'] do
-  owner node['artifactory_ii']['user']
-  mode 00755
 end
 
 ark 'artifactory' do
@@ -60,16 +52,16 @@ ark 'artifactory' do
   action :install
 end
 
-link ::File.join(node['artifactory_ii']['home'], 'webapps') do
-  to '/usr/local/artifactory/webapps'
-end
+links = [
+  { ::File.join(node['artifactory_ii']['home'], 'webapps') => '/usr/local/artifactory/webapps' },
+  { ::File.join(node['artifactory_ii']['catalina_base'], 'logs') => node['artifactory_ii']['log_dir'] },
+  { ::File.join(node['artifactory_ii']['catalina_base'], 'conf') => '/usr/local/artifactory/tomcat/conf' }
+]
 
-link ::File.join(node['artifactory_ii']['catalina_base'], 'logs') do
-  to node['artifactory_ii']['log_dir']
-end
-
-link ::File.join(node['artifactory_ii']['catalina_base'], 'conf') do
-  to '/usr/local/artifactory/tomcat/conf'
+links.each do |folder, folder2|
+  link folder do
+    to folder2
+  end
 end
 
 template '/usr/local/artifactory/tomcat/conf/server.xml' do
