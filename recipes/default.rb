@@ -33,7 +33,8 @@ end
 dir = [
   node['artifactory_ii']['home'],
   node['artifactory_ii']['catalina_base'],
-  %w(work temp).each { |tomcat_dir| ::File.join(node['artifactory_ii']['catalina_base'], tomcat_dir) },
+  ::File.join(node['artifactory_ii']['catalina_base'], 'work'),
+  ::File.join(node['artifactory_ii']['catalina_base'], 'temp'),
   node['artifactory_ii']['log_dir']
 ]
 
@@ -58,9 +59,11 @@ links = [
   { ::File.join(node['artifactory_ii']['catalina_base'], 'conf') => '/usr/local/artifactory/tomcat/conf' }
 ]
 
-links.each do |folder, folder2|
-  link folder do
-    to folder2
+links.each do |f|
+  f.each do |folder, folder2|
+    link folder do
+      to folder2
+    end
   end
 end
 
