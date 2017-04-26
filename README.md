@@ -1,3 +1,7 @@
+[![Chef cookbook](https://img.shields.io/cookbook/v/artifactory_ii.svg)]()
+[![Code Climate](https://codeclimate.com/github/Stromweld/artifactory_ii/badges/gpa.svg)](https://codeclimate.com/github/Stromweld/artifactory_ii)
+[![Issue Count](https://codeclimate.com/github/Stromweld/artifactory_ii/badges/issue_count.svg)](https://codeclimate.com/github/Stromweld/artifactory_ii)
+
 # artifactory_ii
 
 Installs JFrog's Artifactory
