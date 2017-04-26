@@ -9,7 +9,9 @@ export TOMCAT_HOME=/opt/jfrog/artifactory/tomcat
 export ARTIFACTORY_PID=/var/opt/jfrog/run/artifactory.pid
 
 export JAVA_OPTIONS="-server -Xms<%= node['artifactory_ii']['java']['xms'] %> -Xmx<%= node['artifactory_ii']['java']['xmx'] %> -Xss256k -XX:OnOutOfMemoryError=\"kill -9 %p\" <%= node['artifactory_ii']['java']['extra_opts'] %>"
-export JAVA_OPTIONS="$JAVA_OPTIONS -Djruby.compile.invokedynamic=false -Dfile.encoding=UTF8 -Dartdist=rpm -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCOD$
+export JAVA_OPTIONS="$JAVA_OPTIONS -Djruby.compile.invokedynamic=false -Dfile.encoding=UTF8 -Dartdist=rpm -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true -Djava.security.egd=file:/dev/./urandom"
 
+# Timeout waiting for artifactory to start
+# START_TMO=60
 # Timeout waiting for artifactory to start
 # START_TMO=60

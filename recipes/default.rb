@@ -37,6 +37,9 @@ package 'jfrog-artifactory-oss'
 
 template '/etc/opt/jfrog/artifactory/default' do
   source 'jvm_parameters.erb'
+  owner 'artifactory'
+  group 'artifactory'
+  mode '0770'
   notifies :restart, 'service[artifactory]', :delayed
 end
 
