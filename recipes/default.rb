@@ -16,60 +16,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+
 if node['artifactory_ii']['install_java']
+  node.default['java']['install_flavor'] = 'oracle'
+  node.default['java']['jdk_version'] = '8'
+  node.default['java']['oracle']['accept_oracle_download_terms'] = true
   include_recipe 'java'
 end
 
-include_recipe 'runit'
-
-# ark requires rsync package
-package %w(unzip rsync)
-
-
-user node['artifactory_ii']['user'] do
-  home node['artifactory_ii']['home']
+yum_repository 'artifactory' do
+  description 'bintray-jfrog-artifactory repo'
+  baseurl 'http://jfrog.bintray.com/artifactory-rpms'
+  enabled true
+  gpgcheck false
+  repo_gpgcheck false
 end
 
-dir = [
-  node['artifactory_ii']['home'],
-  node['artifactory_ii']['catalina_base'],
-  ::File.join(node['artifactory_ii']['catalina_base'], 'work'),
-  ::File.join(node['artifactory_ii']['catalina_base'], 'temp'),
-  node['artifactory_ii']['log_dir']
-]
+package 'jfrog-artifactory-oss'
 
-dir.each do |folder|
-  directory folder do
-    owner node['artifactory_ii']['user']
-    mode 00755
-    recursive true
-  end
-
+template '/etc/opt/jfrog/artifactory/default' do
+  source 'jvm_parameters.erb'
+  notifies :restart, 'service[artifactory]', :delayed
 end
 
-ark 'artifactory' do
-  url node['artifactory_ii']['zip_url']
-  checksum node['artifactory_ii']['zip_checksum']
-  action :install
+service 'artifactory' do
+  action [:enable, :start]
 end
-
-links = [
-  { ::File.join(node['artifactory_ii']['home'], 'webapps') => '/usr/local/artifactory/webapps' },
-  { ::File.join(node['artifactory_ii']['catalina_base'], 'logs') => node['artifactory_ii']['log_dir'] },
-  { ::File.join(node['artifactory_ii']['catalina_base'], 'conf') => '/usr/local/artifactory/tomcat/conf' }
-]
-
-links.each do |f|
-  f.each do |folder, folder2|
-    link folder do
-      to folder2
-    end
-  end
-end
-
-template '/usr/local/artifactory/tomcat/conf/server.xml' do
-  mode 00644
-  notifies :restart, 'runit_service[artifactory]'
-end
-
-runit_service 'artifactory'

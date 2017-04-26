@@ -4,7 +4,7 @@ maintainer_email 'hemminger@hotmail.com'
 license 'Apache-2.0'
 description 'Installs/Configures artifactory_ii'
 long_description 'Installs/Configures artifactory_ii'
-version '1.0.0'
+version '2.0.0'
 chef_version '>= 12.1' if respond_to?(:chef_version)
 
 # The `issues_url` points to the location where issues for this cookbook are
@@ -19,11 +19,9 @@ issues_url 'https://github.com/Stromweld/artifactory_ii/issues'
 #
 source_url 'https://github.com/Stromweld/artifactory_ii'
 
-%w(ubuntu debian centos redhat amazon).each do |os|
+%w(centos redhat fedora amazon).each do |os|
   supports os
 end
 
 depends          'java'
-depends          'runit'
-depends          'ark'
 depends          'apache2'
